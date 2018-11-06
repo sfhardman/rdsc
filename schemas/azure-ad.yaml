@@ -1,0 +1,106 @@
+# https://msdn.microsoft.com/en-us/library/azure/ad/graph/api/api-catalog
+# most actions need to be executed by a service principal with "Microsoft.Azure.ActiveDirectory" permission "Manage apps that this app creates or owns"
+# example usage:
+# $ access_token=$(curl -s "https://login.microsoftonline.com/${azure_tenant_id}/oauth2/token" -X POST \
+#    -d "grant_type=client_credentials" \
+#    -d "client_id=${azure_client_id}" \
+#    --data-urlencode "client_secret=${azure_client_secret}" \
+#    -d "resource=https://graph.windows.net" \
+#    | jq -r .access_token)
+# $ node index.js -s azure-ad -d ./examples/azure-ad.yaml -t "https://graph.windows.net/${azure_tenant_id}" -H "Authorization: Bearer ${access_token}"
+application:
+  keys: 
+    - displayName
+    - objectId
+    - appId
+  actions:
+    getList:
+      url: /applications?api-version=1.6&$filter=displayName eq '{application.displayName}'
+      itemsProp: value
+      matchOn:
+        displayName: '{application.displayName}'
+    add:
+      url: /applications?api-version=1.6
+    delete:
+      url: /applications/{application.objectId}?api-version=1.6
+    update:
+      url: /applications/{application.objectId}?api-version=1.6
+servicePrincipal:
+  keys:
+    - objectId
+    - appId
+  injectDesiredStateProps:
+    appId: '{application.appId}'
+    displayName: '{application.displayName}'
+  actions:
+    getList:
+      url: /servicePrincipals?api-version=1.6&$filter=appId eq '{application.appId}'
+      itemsProp: value
+      matchOn:
+        appId: '{application.appId}'
+    add:
+      url: /servicePrincipals?api-version=1.6
+    delete:
+      url: /servicePrincipals/{servicePrincipal.objectId}?api-version=1.6
+    update:
+      url: /servicePrincipals/{servicePrincipal.objectId}?api-version=1.6
+userAppRoleAssignment:
+  keys:
+    - objectId
+    - id
+    - resourceId
+    - principalId
+  injectDesiredStateProps:
+    resourceId: '{servicePrincipal.objectId}'
+    principalId: '{user.objectId}'
+  actions:
+    getList: 
+      url: /users/{userAppRoleAssignment.principalId}/appRoleAssignments?api-version=1.6&$filter=resourceId eq guid'{userAppRoleAssignment.resourceId}'
+      itemsProp: value
+      matchOn:
+        id: '{userAppRoleAssignment.id}'
+        resourceId: '{servicePrincipal.objectId}'
+        principalId: '{userAppRoleAssignment.principalId}'
+    add:
+      url: /users/{userAppRoleAssignment.principalId}/appRoleAssignments?api-version=1.6
+# Not tested - not available on developer subscription
+groupAppRoleAssignment:
+  keys:
+    - objectId
+    - id
+    - resourceId
+    - principalId
+  injectDesiredStateProps:
+    resourceId: '{servicePrincipal.objectId}'
+  actions:
+    getList: 
+      url: /groups/{groupAppRoleAssignment.principalId}/appRoleAssignments?api-version=1.6&$filter=resourceId eq guid'{groupAppRoleAssignment.resourceId}'
+      itemsProp: value
+      matchOn:
+        id: '{groupAppRoleAssignment.id}'
+        resourceId: '{servicePrincipal.objectId}'
+        principalId: '{groupAppRoleAssignment.principalId}'
+    add:
+      url: /groups/{groupAppRoleAssignment.principalId}/appRoleAssignments?api-version=1.6 
+# provided for lookup only for userAppRoleAssignment
+# needs to be executed by a service principal with "Microsoft.Azure.ActiveDirectory" permission "Read directory data"
+user:
+  keys:
+    - userPrincipalName
+    - objectId
+  actions:
+    getOne:
+      url: /users/{user.userPrincipalName}?api-version=1.6
+# provided for lookup only for groupAppRoleAssignment
+# needs to be executed by a service principal with "Microsoft.Azure.ActiveDirectory" permission "Read directory data"
+group:
+  keys:
+    - displayName
+    - objectId
+  actions:
+    getList:
+      url: /groups?api-version=1.6&$filter=displayName eq '{group.displayName}'
+      itemsProp: value
+      matchOn:
+        displayName: '{group.displayName}'
+        securityEnabled: true

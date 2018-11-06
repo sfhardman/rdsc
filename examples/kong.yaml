@@ -1,0 +1,77 @@
+- type: service
+  # absent: true
+  properties:
+    name: 'test-service'
+    connect_timeout: 5000
+    host: httpbin-upstream
+    port: 80
+    protocol: http
+    path: /headers
+  children:
+    - type: route
+      # absent: true
+      properties:
+        id: a1388d19-14f3-4f78-a3d3-41e4dd4a3395
+        paths:
+          - /test-service
+        strip_path: true
+- type: service
+  # absent: true
+  properties:
+    name: 'test-service2'
+    connect_timeout: 5000
+    host: httpbin.org
+    port: 80
+    protocol: http
+    path: /get
+  children:
+    - type: route
+      # absent: true
+      properties:
+        id: 03107e0c-f04f-4e91-8634-c3118104f496
+        paths:
+          - /test-service2
+        strip_path: true
+    - type: plugin
+      # absent: true
+      properties: 
+        name: request-transformer
+        config:
+          append:
+            headers: 
+              - 'x-my-header:testservice2'
+- type: upstream
+  # absent: true
+  properties:
+    name: httpbin-upstream
+    slots: 1001
+  children:
+    - type: target
+      # absent: true
+      properties:
+        target: httpbin.org:80
+        weight: 300
+- type: plugin
+  # absent: true
+  properties: 
+    name: request-transformer
+    config:
+      append:
+        headers:
+          - 'x-global-header:othervalue'
+- type: consumer
+  properties:
+    username: bob
+  children:
+    - type: basic-auth-credential
+      # absent: true
+      properties:
+        username: bobo
+        password: p@ssword
+    - type: jwt-credential
+      properties:
+        key: bobs-jwt
+        secret: 9ubUs7yp1r23jQs4Vo52pcy4D0yNTRlT
+    - type: key-auth-credential
+      properties:
+        key: bobs-key

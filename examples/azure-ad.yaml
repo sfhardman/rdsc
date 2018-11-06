@@ -1,0 +1,46 @@
+- type: application
+  # absent: true
+  properties:
+    displayName: zzzzzz
+    availableToOtherTenants: false
+    oauth2AllowImplicitFlow: true
+    appRoles: 
+      - id: 94f613bf-18b3-4657-a2d7-b73f257c0c0d
+        displayName: zzzzzzAdmin
+        description: Admininstrator for zzzzzz app
+        value: zzzzzzAdmin
+        allowedMemberTypes:
+          - User
+      - id: a45071f2-efae-40cc-8eb6-88068102c7b8
+        displayName: zzzzzzUser
+        description: Regular user for zzzzzz app
+        value: zzzzzzUser
+        isEnabled: true
+        allowedMemberTypes:
+          - User
+    homepage: http://localhost:8000
+    replyUrls: 
+      - http://localhost:9999
+      - http://localhost:8000
+    requiredResourceAccess: 
+      # Azure AD sign on and read own profile
+      - resourceAppId: 00000002-0000-0000-c000-000000000000
+        resourceAccess:
+          - id: 311a71cc-e848-46a1-bdf8-97ff7156d8e6
+            type: Scope
+  children:
+    - type: servicePrincipal
+      # absent: true
+      properties: 
+        # accountEnabled: false
+        homepage: http://localhost:8000
+      # children:
+      #   - type: user
+      #     properties:
+      #       userPrincipalName: bobadmin@contoso.com
+      #     children:
+      #       - type: userAppRoleAssignment
+      #         properties:
+      #           # app role ID
+      #           id: 94f613bf-18b3-4657-a2d7-b73f257c0c0d
+

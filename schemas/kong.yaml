@@ -1,0 +1,170 @@
+service:
+  keys:
+    - id
+    - name
+  actions:
+    add:
+        url: /services/
+        method: POST
+    update:
+        url: /services/{service.id}
+        method: PATCH
+    delete:
+        url: /services/{service.id}
+        method: DELETE
+    getOne:
+        url: /services/{service.name}
+        method: GET
+route:
+  keys: 
+    - id
+  injectDesiredStateProps:
+    service:
+      id: '{service.id}'
+  actions:
+    add:
+      url: /routes/{route.id}
+      method: PUT
+    update:
+      url: /routes/{route.id}
+      method: PUT      
+    getOne:
+      url: /routes/{route.id}
+    delete: 
+      url: /routes/{route.id}
+upstream:
+  keys:
+    - name
+  actions:
+    add:
+        url: /upstreams/
+        method: POST
+    update:
+        url: /upstreams/{upstream.name}
+        method: PATCH
+    delete:
+        url: /upstreams/{upstream.name}
+        method: DELETE
+    getOne:
+        url: /upstreams/{upstream.name}
+        method: GET
+target:
+  keys: 
+    - target
+    - weight
+  defaults:
+    weight: 100
+  actions:
+    add:
+        url: /upstreams/{upstream.name}/targets
+        method: POST
+    delete:
+        url: /upstreams/{upstream.name}/targets/{target.target}
+        method: DELETE
+    getList:
+        url: /upstreams/{upstream.name}/targets/all
+        method: GET
+        itemsProp: data
+        matchOn:
+          target: '{target.target}'
+          weight: '{target.weight}'
+plugin:
+  keys:
+    - name
+    - id
+    - consumer_id
+    - service_id
+    - route_id
+    - api_id
+  injectDesiredStateProps:
+    service_id: '{service.id}'
+    route_id: '{route.id}'
+    consumer_id: '{consumer.id}'
+    api_id: '{api.id}'
+  actions:
+    getList:
+      url: /plugins?name={plugin.name}&size=1000
+      method: GET
+      itemsProp: data
+      matchOn:
+        name: '{plugin.name}'
+        service_id: '{service.id}'
+        route_id: '{route.id}'
+        consumer_id: '{consumer.id}'
+        api_id: '{api.id}'
+    add:
+      url: /plugins
+      method: POST
+    update:
+      url: /plugins/{plugin.id}
+      method: PATCH
+    delete:
+      url: /plugins/{plugin.id}
+      method: DELETE
+consumer:
+  keys:
+    - username
+  actions:
+    add:
+        url: /consumers/
+        method: POST
+    update:
+        url: /consumers/{consumer.username}
+        method: PATCH
+    delete:
+        url: /consumers/{consumer.username}
+        method: DELETE
+    getOne:
+        url: /consumers/{consumer.username}
+        method: GET
+basic-auth-credential:
+  keys:
+    - username
+  ignoreMismatchedPropsForUpdate:
+    # password is not round trippable as only a hash is returned on GET
+    - password
+  actions:
+    add:
+        url: /consumers/{consumer.username}/basic-auth
+        method: POST
+    update:
+        url: /consumers/{consumer.username}/basic-auth/{basic-auth-credential.username}
+        method: PATCH
+    delete:
+        url: /consumers/{consumer.username}/basic-auth/{basic-auth-credential.username}
+        method: DELETE
+    getOne:
+        url: /consumers/{consumer.username}/basic-auth/{basic-auth-credential.username}
+        method: GET
+jwt-credential:
+  keys:
+    - key
+  actions:
+    add:
+        url: /consumers/{consumer.username}/jwt
+        method: POST
+    update:
+        url: /consumers/{consumer.username}/jwt/{jwt-credential.key}
+        method: PATCH
+    delete:
+        url: /consumers/{consumer.username}/jwt/{jwt-credential.key}
+        method: DELETE
+    getOne:
+        url: /consumers/{consumer.username}/jwt/{jwt-credential.key}
+        method: GET
+key-auth-credential:
+  keys:
+    - key
+  actions:
+    add:
+        url: /consumers/{consumer.username}/key-auth
+        method: POST
+    update:
+        url: /consumers/{consumer.username}/key-auth/{key-auth-credential.key}
+        method: PATCH
+    delete:
+        url: /consumers/{consumer.username}/key-auth/{key-auth-credential.key}
+        method: DELETE
+    getOne:
+        url: /consumers/{consumer.username}/key-auth/{key-auth-credential.key}
+        method: GET
