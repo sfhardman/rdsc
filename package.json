@@ -1,6 +1,6 @@
 {
   "name": "rdsc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -25,5 +25,17 @@
       "src/*.js"
     ],
     "testEnvironment": "node"
-  }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/sfhardman/rdsc"
+  },
+  "bugs": {
+    "url" : "https://github.com/sfhardman/rdsc/issues"
+  },
+  "homepage": "https://github.com/sfhardman/rdsc#readme",
+  "keywords": [
+    "azure",
+    "kong"
+  ]
 }
