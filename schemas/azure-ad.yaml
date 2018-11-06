@@ -7,7 +7,7 @@
 #    --data-urlencode "client_secret=${azure_client_secret}" \
 #    -d "resource=https://graph.windows.net" \
 #    | jq -r .access_token)
-# $ node index.js -s azure-ad -d ./examples/azure-ad.yaml -t "https://graph.windows.net/${azure_tenant_id}" -H "Authorization: Bearer ${access_token}"
+# $ rdsc -s azure-ad -d ./examples/azure-ad.yaml -t "https://graph.windows.net/${azure_tenant_id}" -H "Authorization: Bearer ${access_token}"
 application:
   keys: 
     - displayName

@@ -1,3 +1,13 @@
+# https://msdn.microsoft.com/en-us/library/azure/ad/graph/api/api-catalog
+# most actions need to be executed by a service principal with "Microsoft.Azure.ActiveDirectory" permission "Manage apps that this app creates or owns"
+# example usage:
+# $ access_token=$(curl -s "https://login.microsoftonline.com/${azure_tenant_id}/oauth2/token" -X POST \
+#    -d "grant_type=client_credentials" \
+#    -d "client_id=${azure_client_id}" \
+#    --data-urlencode "client_secret=${azure_client_secret}" \
+#    -d "resource=https://graph.windows.net" \
+#    | jq -r .access_token)
+# $ rdsc -s azure-ad -d ./examples/azure-ad.yaml -t "https://graph.windows.net/${azure_tenant_id}" -H "Authorization: Bearer ${access_token}"
 - type: application
   # absent: true
   properties:

@@ -5,70 +5,23 @@ const log = require('loglevel');
 const Entity = require('./Entity');
 const FetchHelper = require('./FetchHelper');
 
-const collect = (val, memo) => {
-  memo.push(val);
-  return memo;
-}
+const main = async(schema, desiredState, headers, targetUrl, verbosity, testForChanges) => {
+  log.setLevel(verbosity || 'INFO', false);
+  const fetchHelper = new FetchHelper(targetUrl, headers);
 
-program
-  .option('-s, --schema [schema-name]', 'Built in schema to use')
-  .option('-f, --schema-file [schema-file-path]', 'Arbitrary schema file to use')
-  .option('-d, --desired <desired-state-file-path>', 'Desired state YAML file')
-  .option('-t, --target <target-base-url>', 'Target base URL')
-  .option('-c, --test-for-changes', 'If there are changes to be made exit with code 1, otherwise exit with code 0')
-  .option('-v, --verbosity <verbosity-level>', 'Logging level (ERROR|WARN|INFO|DEBUG|TRACE)')
-  .option('-H, --header [header]', 'Headers to pass to the API (e.g. for authentication)', collect, [])
-  .option('--debug', 'Output debug logging')
-  .parse(process.argv);
-
-const validOptions = (program.schemaFile || program.schema)
-  && program.desired
-  && program.target;
-
-if (!validOptions) {
-  program.outputHelp();
-  process.exit(1);
-}
-
-log.setLevel(program.verbosity || 'INFO', false);
-
-const readYaml = filename => yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
-
-const headers =  {};
-
-if (program.header) {
-  for (let header of program.header) {
-    const name = header.split(':')[0];
-    const value = header.replace(`${name}:`, '').trim();
-    headers[name] = value;
+  for (rootNode of desiredState) {
+    const rootEntity = new Entity(
+      rootNode.type, 
+      rootNode.properties,
+      rootNode.children,
+      rootNode.absent,
+      [], 
+      schema,
+      testForChanges,
+      fetchHelper);
+    await rootEntity.process();
   }
 }
 
-const schemaFile = program.schemaFile || `./schemas/${program.schema}.yaml`;
-log.debug(`Loading schema from ${schemaFile}`);
-const schema = readYaml(schemaFile);
-const desiredState = readYaml(program.desired);
+module.exports = main;
 
-const fetchHelper = new FetchHelper(program.target, headers);
-
-const main = async () => {
-  try {
-    for (rootNode of desiredState) {
-      const rootEntity = new Entity(
-        rootNode.type, 
-        rootNode.properties,
-        rootNode.children,
-        rootNode.absent,
-        [], 
-        schema,
-        program.testForChanges,
-        fetchHelper);
-      await rootEntity.process();
-    }
-  } catch (err) {
-    log.error(err);
-    process.exit(9);
-  }
-}
-
-main();

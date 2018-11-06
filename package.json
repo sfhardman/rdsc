@@ -1,13 +1,14 @@
 {
-  "name": "rdc",
-  "version": "1.0.0",
+  "name": "rdsc",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage"
   },
+  "bin": "bin/index.js",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "clone-deep": "^4.0.0",
     "commander": "^2.19.0",

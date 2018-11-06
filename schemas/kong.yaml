@@ -1,3 +1,6 @@
+# https://docs.konghq.com/0.14.x/admin-api/
+# example usage:
+# $ rdsc -s kong -d ./examples/kong.yaml -t "http://localhost:8001"
 service:
   keys:
     - id
