@@ -44,7 +44,7 @@ if (program.header) {
   }
 }
 
-const schemaFile = program.schemaFile || `./schemas/${program.schema}.yaml`;
+const schemaFile = program.schemaFile || `${__dirname}/../schemas/${program.schema}.yaml`;
 log.debug(`Loading schema from ${schemaFile}`);
 const schema = readYaml(schemaFile);
 const desiredState = readYaml(program.desired);
