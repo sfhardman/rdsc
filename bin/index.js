@@ -5,6 +5,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const log = require('loglevel');
 const rdsc = require('../index');
+const package = require('../package.json');
 
 const collect = (val, memo) => {
   memo.push(val);
@@ -12,6 +13,7 @@ const collect = (val, memo) => {
 }
 
 program
+  .version(package.version)
   .option('-s, --schema [schema-name]', 'Built in schema to use')
   .option('-f, --schema-file [schema-file-path]', 'Arbitrary schema file to use')
   .option('-d, --desired <desired-state-file-path>', 'Desired state YAML file')
@@ -31,6 +33,8 @@ if (!validOptions) {
 }
 
 log.setLevel(program.verbosity || 'INFO', false);
+
+log.debug(`RDSC v${package.version}`);
 
 const readYaml = filename => yaml.safeLoad(fs.readFileSync(filename, 'utf8'));
 

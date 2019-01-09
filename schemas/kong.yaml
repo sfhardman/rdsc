@@ -21,18 +21,19 @@ service:
 route:
   keys: 
     - id
+    - name
   injectDesiredStateProps:
     service:
       id: '{service.id}'
   actions:
     add:
-      url: /routes/{route.id}
-      method: PUT
+      url: /routes/
+      method: POST
     update:
       url: /routes/{route.id}
       method: PUT      
     getOne:
-      url: /routes/{route.id}
+      url: /routes/{route.name}
     delete: 
       url: /routes/{route.id}
 upstream:
@@ -71,42 +72,102 @@ target:
         matchOn:
           target: '{target.target}'
           weight: '{target.weight}'
-plugin:
+service-plugin:
   keys:
     - name
     - id
-    - consumer_id
-    - service_id
-    - route_id
-    - api_id
   injectDesiredStateProps:
-    service_id: '{service.id}'
-    route_id: '{route.id}'
-    consumer_id: '{consumer.id}'
-    api_id: '{api.id}'
+    service:
+      id: '{service.id}'
   actions:
     getList:
-      url: /plugins?name={plugin.name}&size=1000
+      url: /services/{service.id}/plugins
       method: GET
       itemsProp: data
       matchOn:
-        name: '{plugin.name}'
-        service_id: '{service.id}'
-        route_id: '{route.id}'
-        consumer_id: '{consumer.id}'
-        api_id: '{api.id}'
+        name: '{service-plugin.name}'
+    add:
+      url: /services/{service.id}/plugins
+      method: POST
+    update:
+      url: /plugins/{service-plugin.id}
+      method: PATCH
+    delete:
+      url: /plugins/{service-plugin.id}
+      method: DELETE
+route-plugin:
+  keys:
+    - name
+    - id
+  injectDesiredStateProps:
+    route:
+      id: '{route.id}'
+  actions:
+    getList:
+      url: /routes/{route.id}/plugins
+      method: GET
+      itemsProp: data
+      matchOn:
+        name: '{route-plugin.name}'
+    add:
+      url: /routes/{route.id}/plugins
+      method: POST
+    update:
+      url: /plugins/{route-plugin.id}
+      method: PATCH
+    delete:
+      url: /plugins/{route-plugin.id}
+      method: DELETE 
+consumer-plugin:
+  keys:
+    - name
+    - id
+  injectDesiredStateProps:
+    consumer:
+      id: '{consumer.id}'
+  actions:
+    getList:
+      url: /consumers/{consumer.id}/plugins
+      method: GET
+      itemsProp: data
+      matchOn:
+        name: '{consumer-plugin.name}'
+    add:
+      url: /consumers/{consumer.id}/plugins
+      method: POST
+    update:
+      url: /plugins/{consumer-plugin.id}
+      method: PATCH
+    delete:
+      url: /plugins/{consumer-plugin.id}
+      method: DELETE            
+global-plugin:
+  keys:
+    - name
+    - id
+  actions:
+    getList:
+      url: /plugins
+      method: GET
+      itemsProp: data
+      matchOn:
+        name: '{global-plugin.name}'
+        service: 
+        consumer: 
+        route: 
     add:
       url: /plugins
       method: POST
     update:
-      url: /plugins/{plugin.id}
+      url: /plugins/{global-plugin.id}
       method: PATCH
     delete:
-      url: /plugins/{plugin.id}
-      method: DELETE
+      url: /plugins/{global-plugin.id}
+      method: DELETE      
 consumer:
   keys:
     - username
+    - id
   actions:
     add:
         url: /consumers/
@@ -119,7 +180,27 @@ consumer:
         method: DELETE
     getOne:
         url: /consumers/{consumer.username}
-        method: GET
+        method: GET  
+consumer-acl:
+  keys: 
+    - group
+  actions:
+    add:
+      url: /consumers/{consumer.username}/acls
+    update:
+      url: /consumers/{consumer.username}/acls/{consumer-acl.group}
+      method: PATCH
+    delete:
+      url: /consumers/{consumer.username}/acls/{consumer-acl.group}
+      method: DELETE
+    # appears to be a bug in the /consumers/{username}/acls/{group}
+    # endpoint in Kong at the moment, sometimes incorrectly returning 404
+    getList:
+      url: /consumers/{consumer.username}/acls
+      method: GET
+      itemsProp: data
+      matchOn:
+        group: '{consumer-acl.group}'     
 basic-auth-credential:
   keys:
     - username

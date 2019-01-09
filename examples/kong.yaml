@@ -1,4 +1,4 @@
-# https://docs.konghq.com/0.14.x/admin-api/
+# https://docs.konghq.com/1.0.x/admin-api/
 # example usage:
 # $ rdsc -s kong -d ./examples/kong.yaml -t "http://localhost:8001"
 - type: service
@@ -14,7 +14,7 @@
     - type: route
       # absent: true
       properties:
-        id: a1388d19-14f3-4f78-a3d3-41e4dd4a3395
+        name: test-service-route
         paths:
           - /test-service
         strip_path: true
@@ -31,11 +31,11 @@
     - type: route
       # absent: true
       properties:
-        id: 03107e0c-f04f-4e91-8634-c3118104f496
+        name: test-service2-route
         paths:
           - /test-service2
         strip_path: true
-    - type: plugin
+    - type: service-plugin
       # absent: true
       properties: 
         name: request-transformer
@@ -78,3 +78,6 @@
     - type: key-auth-credential
       properties:
         key: bobs-key
+    - type: consumer-acl
+      properties:
+        group: group-name

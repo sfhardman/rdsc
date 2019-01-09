@@ -58,6 +58,3 @@ typings/
 .env
 
 build/
-
-# temp - until get rid of local repo
-package-lock.json

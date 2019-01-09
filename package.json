@@ -27,11 +27,11 @@
     "testEnvironment": "node"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/sfhardman/rdsc"
+    "type": "git",
+    "url": "https://github.com/sfhardman/rdsc"
   },
   "bugs": {
-    "url" : "https://github.com/sfhardman/rdsc/issues"
+    "url": "https://github.com/sfhardman/rdsc/issues"
   },
   "homepage": "https://github.com/sfhardman/rdsc#readme",
   "keywords": [

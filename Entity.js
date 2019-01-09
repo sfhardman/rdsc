@@ -36,6 +36,9 @@ class Entity {
   }
 
   get entitySchema() {
+    if (!this.schema[this.type]) {
+      throw new Error(`Schema does not contain a definition for type "${this.type}"`);
+    }
     return this.schema[this.type];
   }
 
@@ -77,14 +80,14 @@ class Entity {
       const substitution = substitutions.find(a => a.replace === value);
       if (substitution) {
         propsToInject[prop] = substitution.with;
-      } else if (value.constructor === Array) {
+      } else if (value && value.constructor === Array) {
         for (let child of value) {
           this.subsituteOnProps(child);
         }
-      } else if (value.constructor === Object) {
+      } else if (value && value.constructor === Object) {
         this.subsituteOnProps(value);
       } else {
-        if (substitutionPattern.test(value)) {
+        if (value && substitutionPattern.test(value)) {
           delete propsToInject[prop];
         }
       }
@@ -97,9 +100,9 @@ class Entity {
     for (let prop of Object.keys(matchOn)) {
       const value = matchOn[prop];
       const substitution = substitutions.find(a => a.replace === value);
-      if (!substitution && value.constructor === Object) {
+      if (!substitution && value && value.constructor === Object) {
         this.findMatchPropsToBeAbsent(value, path.concat([prop]), propsToBeAbsent);
-      } else if (!substitution && substitutionPattern.test(value)) {
+      } else if (!substitution && value && substitutionPattern.test(value)) {
         // there is a subsitituion that is supposed to happen, but the desired state
         // has no matching key, so require the prop to be absent
         propsToBeAbsent.push(path.concat([prop]));
