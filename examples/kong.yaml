@@ -54,7 +54,7 @@
       properties:
         target: httpbin.org:80
         weight: 300
-- type: plugin
+- type: global-plugin
   # absent: true
   properties: 
     name: request-transformer
